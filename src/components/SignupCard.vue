@@ -2,9 +2,9 @@
   <v-app>
     <v-card :loading="loading" class="mx-auto my-auto" width="500">
       <v-card-title center>
-          Sign In
+          Sign Up
       </v-card-title>
-      <v-form>
+      <v-form v-model="valid">
         <v-container>
           <v-row>
             <v-col class="pb-0 mx-3">
@@ -30,14 +30,27 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-              ><v-btn color="primary" @click="checkAuth">
-                 Login
-              </v-btn>
+            <v-col class="pb-0 mx-3">
+              <v-text-field
+                v-model="firstName"
+                label="First Name"
+                :rules="nameRules"
+                required
+              ></v-text-field>
             </v-col>
+            <v-col class="pb-0 mx-3">
+              <v-text-field
+                v-model="lastName"
+                label="Last Name"
+                :rules="nameRules"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
             <v-col
-              ><v-btn color="primary" @click="signup">
-                 Signup
+              ><v-btn color="primary" @click="checkCredentials">
+                 Sign Up
               </v-btn>
             </v-col>
           </v-row>
@@ -47,15 +60,15 @@
                 dense
                 text
                 type="success"
-                v-if="triedLogin && authenticated"
-                >User Authenticated</v-alert
+                v-if="triedSignUp && authenticated"
+                >User Created. Please login now.</v-alert
               >
               <v-alert
                 dense
                 text
                 type="error"
-                v-if="triedLogin && !authenticated"
-                >Invalid Credentials</v-alert
+                v-if="triedSignUp && !authenticated"
+                >Invalid Data</v-alert
               >
             </v-col>
           </v-row>
@@ -73,21 +86,25 @@
 </template>
 
 <script>
-import { login } from "../utils/api";
-import { ACCESS_TOKEN } from "../utils/constants";
-import { validateEmail, getCookie } from "../utils/helpers";
-
+import { signup } from "../utils/api";
+import { validateEmail } from "../utils/helpers";
 export default {
-  name: "LoginCard",
+  name: "SignupCard",
   data() {
     return {
       email: "",
       password: "",
-      keepLoggedIn: "",
+      firstName: "",
+      lastName: "",
       showPassword: false,
-      triedLogin: false,
+      triedSignUp: false,
       authenticated: false,
       loading: false,
+      valid: false,
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => v.length <= 10 || 'Name must be less than 10 characters',
+      ],
       passwordRules: [
         v => !!v || 'Password is required',
       ],
@@ -98,36 +115,34 @@ export default {
     };
   },
   methods: {
-    checkAuth() {
-      const loginRequest = {
+    checkCredentials() {
+      const signUpRequest = {
         email: this.email,
         password: this.password,
-      };
+        firstName: this.firstName,
+        lastName: this.lastName,
+        userRole: "user"
+      }
 
       this.loading = true;
-      login(loginRequest)
-        .then(() => {
-          this.triedLogin = true;
-          this.authenticated = true;
-          const token = getCookie("accessToken")
-          setTimeout(() => {
-            this.loading = false;
-            if (token) localStorage.setItem(ACCESS_TOKEN, token);
-            this.$router.replace({ path: "/home" });
-          }, 2000);
-        })
-        .catch((error) => {
-          if (error.status === 401) {
-            this.triedLogin = true;
-            this.authenticated = false;
-            this.loading = false;
-          }
+
+      signup(signUpRequest)
+      .then(() => {
+        this.triedSignUp = true;
+        this.authenticated = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.$router.push({ path: "/login" });
+        }, 2000)
+      })
+      .catch((error) => {
+        if (error.status === 409 || error.status === 400) {
+          this.triedSignUp = true;
+          this.authenticated = false;
+          this.loading = false;
         }
-      );
-    },
-    signup() {
-      this.$router.push({ path: "/signup" });
+      })
     }
-  },
-};
+  }
+}
 </script>
