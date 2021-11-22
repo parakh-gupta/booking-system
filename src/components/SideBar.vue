@@ -83,9 +83,6 @@ export default {
       }
  },
  methods:{
-   imgsrc(){
-     return require(this.$vuetify.theme.dark ? "../assets/img/Provize-Logo-2020-05.png" :"../assets/img/provize.png")
-   },
    toggleDarkTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       //console.log(this.$vuetify.theme.dark);
