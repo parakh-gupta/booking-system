@@ -32,10 +32,10 @@ export async function deleteDevice(id) {
 	await axios.delete(`${API_BASE_URL}/devices/${id}`).catch(() => { })
 }
 
-// export async function getDevice() {
-// 	const response = await axios.get(`${API_BASE_URL}/devices/`).catch(() => { })
-// 	return response
-// }
+export async function bookDevice(bookData) {
+	const response = await axios.post(`${API_BASE_URL}/book`,bookData).catch(() => { })
+	return response
+}
 
 export async function updateDevice(device) {
 	const response = await axios.put(`${API_BASE_URL}/devices`, device).catch(() => { })

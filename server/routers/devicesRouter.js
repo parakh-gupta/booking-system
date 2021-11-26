@@ -63,8 +63,6 @@ async function main() {
             res.status(400).send({ msg: "User not present in request" });
         } else if (!req.body.ipaddress) {
             res.status(400).send({ msg: "IP address not present in request" });
-        } else if (!req.body.availability) {
-          res.status(400).send({ msg: "Device availability not present in request" });
         } else if (!req.body.team) {
           res.status(400).send({ msg: "Team not present in request" });
         } else {
@@ -74,7 +72,7 @@ async function main() {
             type: req.body.type,
             user: req.body.user,
             ipaddress: req.body.ipaddress,
-            availability: req.body.availability,
+            availability: true,
             team: req.body.team,
           };
           data.id = generateUuid();
@@ -88,7 +86,7 @@ async function main() {
             console.error(e);
           }
         });
-    }
+      }
     });
 
     devicesRouter.put("/", async(req, res) => {
@@ -102,8 +100,6 @@ async function main() {
             res.status(400).send({ msg: "User not present in request" });
         } else if (!req.body.ipaddress) {
             res.status(400).send({ msg: "IP address not present in request" });
-        } else if (!req.body.availability) {
-          res.status(400).send({ msg: "Device availability not present in request" });
         } else if (!req.body.team) {
           res.status(400).send({ msg: "Team not present in request" });
         } else {
@@ -113,8 +109,7 @@ async function main() {
               type: req.body.type,
               user: req.body.user,
               team: req.body.team,
-              ipaddress: req.body.ipaddress,
-              availability: req.body.availability
+              ipaddress: req.body.ipaddress
               }
             };
         await client

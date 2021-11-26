@@ -49,7 +49,10 @@
               v-bind="attrs"
               v-on="on"
             >
-              New Device
+            <v-icon left>
+              mdi-plus
+            </v-icon>
+               Add New Device
             </v-btn>
           </template>
           <v-card>
@@ -110,20 +113,10 @@
                       label="Team"
                     ></v-text-field>
                   </v-col>
-                <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="newItem.availability"
-                      label="Availibility"
-                    ></v-text-field>
-                  </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
-
+            <v-divider></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
@@ -205,20 +198,10 @@
                       label="Team"
                     ></v-text-field>
                   </v-col>
-                <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.availability"
-                      label="Availibility"
-                    ></v-text-field>
-                  </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
-
+            <v-divider></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
@@ -248,8 +231,48 @@
               <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" outlined @click="closeDelete">Cancel</v-btn>
-                <v-btn \escolor="blue darken-1" outlined @click="deleteItemConfirm">OK</v-btn>
+                <v-btn text color="blue darken-1" @click="closeDelete">Cancel</v-btn>
+                <v-btn text color="blue darken-1" @click="deleteItemConfirm">OK</v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog  v-model="showBookDevice" max-width="700px">
+            <v-card>
+              <v-card-text>
+                <v-container>
+                  <v-row class="ma-1">
+                    <v-col cols="12">
+                      Select Date
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                    <v-date-picker
+                      v-model="dates"
+                      range
+                    ></v-date-picker>
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                    <v-text-field
+                      v-model="dateRangeText"
+                      label="Date range"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                </v-container>
+                </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text color="blue darken-1" @click="cancelBooking">Cancel</v-btn>
+                <v-btn text color="blue darken-1" @click="book">Book</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
@@ -258,28 +281,36 @@
         <template v-slot:item.sno="{ index }">
           <span>{{index+1}}</span>
         </template>
-        <template v-slot:item.actions="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }"> 
-              <v-icon
-                small
-                class="mr-2"
-                @click="editItem(item)"
-                v-if="userRole === 'admin'"
-              >
-                mdi-pencil
-              </v-icon>
-              <v-icon
-                small
-                @click="deleteItem(item)"
-                v-on="on"
-                v-if="userRole === 'admin'"
-              >
-                mdi-delete
-              </v-icon>
-            </template>
-          <span>Delete</span>
-          </v-tooltip>
+        <template v-slot:item.actions="{ item }" >
+          <v-icon
+            small
+            class="mr-2"
+            color="primary"
+            @click="editItem(item)"
+            v-if="userRole === 'admin'"
+          >
+            mdi-pencil
+          </v-icon>
+          <v-icon
+            small
+            color="primary"
+            @click="deleteItem(item)"
+          >
+            mdi-delete
+          </v-icon>
+        </template>
+        <template v-slot:item.booking="{ item }">
+            <v-btn
+            small text
+            color="primary"
+            block
+            outlined
+            v-if="item.availability==true"
+            @click="bookDeviceForm(item)"
+          >
+            Book
+          </v-btn>
+          <span class="red--text text-center" v-else>ALREADY BOOKED</span>
         </template>
       </v-data-table>
     </v-card>
@@ -287,7 +318,7 @@
 </template>
 
 <script>
-import { deleteDevice, getDevice, addDevice, updateDevice} from "../utils/api";
+import { deleteDevice, getDevice, addDevice, updateDevice,bookDevice} from "../utils/api";
 import { mapState } from 'vuex';
 
   export default {
@@ -301,11 +332,10 @@ import { mapState } from 'vuex';
           },
           { text: 'Device Name', value: 'deviceName' },
           { text: 'Device Type', value: 'type' },
-          { text: 'User', value: 'user' },
-          { text: 'Team', value: 'team' },
           { text: 'IP address', value: 'ipaddress' },
-          { text: 'Availability', value: 'availability' },
-          { text: 'Actions', value: 'actions' },
+          { text: 'Owner', value: 'user' },
+          { text: 'Team', value: 'team' },
+          { text: 'Booking', value: 'booking' },
         ],
       alert:false,
       deleteObj:null,
@@ -316,7 +346,6 @@ import { mapState } from 'vuex';
         type: '',
         ipaddress: '0.0.0.0',
         user: '',
-        availabilty: '',
         team: ''
       },
       newItem: {
@@ -324,7 +353,6 @@ import { mapState } from 'vuex';
         type: '',
         ipaddress: '0.0.0.0',
         user: '',
-        availabilty: '',
         team:''
       },
       defaultItem: {
@@ -332,17 +360,24 @@ import { mapState } from 'vuex';
         type: '',
         ipaddress: '0.0.0.0',
         user: '',
-        availabilty: '',
         team:''
       },
       search:'',
       formTitle:'New Device',
-      editDialog: false
+      editDialog: false,
+      showBookDevice: false,
+      bookDeviceId: null,
+      dates: ['2021-11-26', '2021-11-27'],
+
     }),
     created () {
+      if(this.userRole=="admin"){this.headers.push({ text: 'Actions', value: 'actions' })}
       this.initialize()
     },
     computed: {
+      dateRangeText () {
+        return this.dates.join(' ~ ')
+      },
     ...mapState('user', ['userId', 'emailId', 'userRole']),
 
     },
@@ -383,6 +418,22 @@ import { mapState } from 'vuex';
       close(){
         this.newItem = this.defaultItem
         this.newDeviceDialog =false
+      },
+      bookDeviceForm(item){
+        this.bookDeviceId = item.id
+        this.showBookDevice = true
+      },
+      book(){
+        bookDevice({
+          deviceId: this.bookDeviceId,
+          dates: this.dates
+        })
+        this.showBookDevice = false
+        this.bookDeviceId = null
+      },
+      cancelBooking(){
+        this.showBookDevice = false
+        this.bookDeviceId = null
       }
     },
   }
