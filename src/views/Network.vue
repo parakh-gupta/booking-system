@@ -281,7 +281,7 @@
         <template v-slot:item.sno="{ index }">
           <span>{{index+1}}</span>
         </template>
-        <template v-slot:item.actions="{ item }" v-if="userRole === 'admin'">
+        <template v-slot:item.actions="{ item }" >
           <v-icon
             small
             class="mr-2"
@@ -335,7 +335,6 @@ import { mapState } from 'vuex';
           { text: 'IP address', value: 'ipaddress' },
           { text: 'Owner', value: 'user' },
           { text: 'Team', value: 'team' },
-          { text: 'Actions', value: 'actions' },
           { text: 'Booking', value: 'booking' },
         ],
       alert:false,
@@ -372,6 +371,7 @@ import { mapState } from 'vuex';
 
     }),
     created () {
+      if(this.userRole=="admin"){this.headers.push({ text: 'Actions', value: 'actions' })}
       this.initialize()
     },
     computed: {
@@ -428,7 +428,7 @@ import { mapState } from 'vuex';
           deviceId: this.bookDeviceId,
           dates: this.dates
         })
-        this.showBookDevice = falses
+        this.showBookDevice = false
         this.bookDeviceId = null
       },
       cancelBooking(){
