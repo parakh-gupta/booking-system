@@ -49,7 +49,7 @@
           </v-row>
           <v-row>
             <v-col
-              ><v-btn color="primary" @click="checkCredentials">
+              ><v-btn color="primary" @click="checkCredentials" :disabled=disableSignup>
                  Sign Up
               </v-btn>
             </v-col>
@@ -113,6 +113,27 @@ export default {
         v => validateEmail(v) || 'E-mail must be valid',
       ],
     };
+  },
+  computed: {
+    disableSignup() {
+      if (
+        this.email === null ||
+        this.email === "" || 
+        this.password === null || 
+        this.password === "" || 
+        !validateEmail(this.email) || 
+        this.firstName === null ||
+        this.firstName === "" ||
+        this.lastName === null ||
+        this.lastName === "" ||
+        this.firstName.length >= 10 ||
+        this.lastName >= 10
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     checkCredentials() {
