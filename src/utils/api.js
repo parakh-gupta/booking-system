@@ -58,6 +58,7 @@ export async function devicesBookedForUser(data) {
 	return response;
 }
 
-export async function releaseDevice(id){
-
+export async function releaseDevice(data){
+	const response = await axios.post(`${API_BASE_URL}/release`,data).catch(() => { })
+	return response
 }

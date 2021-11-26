@@ -184,17 +184,6 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.user"
-                      label="User"
-                      :rules=ownerRules
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
                       v-model="editedItem.team"
                       label="Team"
                       :rules=teamRules
@@ -350,14 +339,12 @@ import { validateIpv4 } from "./../utils/helpers";
         deviceName: '',
         type: '',
         ipaddress: '0.0.0.0',
-        user: '',
         team: ''
       },
       newItem: {
         deviceName: '',
         type: '',
         ipaddress: '0.0.0.0',
-        user: '',
         team:''
       },
       newEditedItem: {},
@@ -365,7 +352,6 @@ import { validateIpv4 } from "./../utils/helpers";
         deviceName: '',
         type: '',
         ipaddress: '0.0.0.0',
-        user: '',
         team:''
       },
       search:'',

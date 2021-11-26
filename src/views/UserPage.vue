@@ -43,20 +43,7 @@
             label="Role"
             readonly
           ></v-text-field>
-          <v-expansion-panels flat>
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              Assigned Devices
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-data-table
-                :headers="headers"
-                :items="devices"
-                :items-per-page="5"
-                class="elevation-1"
-                v-if="devices.length>0"
-              >
-               <v-dialog v-model="releaseDialog" max-width="300px">
+          <v-dialog v-model="releaseDialog" max-width="300px">
                 <v-card>
                   <v-card-title class="text-h5">Alert</v-card-title>
                   <v-divider></v-divider>
@@ -72,6 +59,19 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
+          <v-expansion-panels flat>
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              Assigned Devices
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-data-table
+                :headers="headers"
+                :items="devices"
+                :items-per-page="5"
+                class="elevation-1"
+                v-if="devices.length>0"
+              >
               <template v-slot:item.release="{ item }">
                   <v-btn
                   small text
@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import {devicesBookedForUser} from "../utils/api";
+import {devicesBookedForUser, releaseDevice} from "../utils/api";
 import { mapState } from 'vuex';
    export default {
     data () {
@@ -146,7 +146,7 @@ import { mapState } from 'vuex';
             text: 'Device Name',
             align: 'start',
             sortable: false,
-            value: 'deveName',
+            value: 'deviceName',
           },
           { text: 'Device Type', value: 'type' },
           { text: 'IP Address', value: 'ipaddress' },
@@ -172,10 +172,15 @@ import { mapState } from 'vuex';
         console.log(this.devices)
       },
       releaseItem(item){
+        console.log("pppppppppppppp")
         this.releaseObj = item
         this.releaseDialog = true
+        console.log("pppppppppppppp", this.releaseDialog)
       },
       release(){
+        releaseDevice({deviceId:this.releaseObj.id})
+        const pos = this.devices.indexOf(this.releaseObj);
+        this.devices.splice(pos, 1)
         this.releaseDialog = false
       },
       close(){

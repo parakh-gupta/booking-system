@@ -4,7 +4,7 @@ const { generateUuid } = require("../services/uuidService");
 
 const devicesRouter = Router();
 
-const defaultUser = "parakh.gupta@incedoinc.com"
+const defaultUser = process.env.DEFAULT_USER
 
 /* Request example */
 /*
@@ -109,8 +109,6 @@ async function main() {
           res.status(400).send({ msg: "Device Name not present in request" });
       } else if (!req.body.type) {
         res.status(400).send({ msg: "Device Type not present in request" });
-      } else if (!req.body.user) {
-          res.status(400).send({ msg: "User not present in request" });
       } else if (!req.body.ipaddress) {
           res.status(400).send({ msg: "IP address not present in request" });
       } else if (!req.body.team) {
@@ -120,7 +118,6 @@ async function main() {
         const newvalues = { $set: {
           deviceName: req.body.deviceName,
           type: req.body.type,
-          user: req.body.user,
           team: req.body.team,
           ipaddress: req.body.ipaddress
           }
@@ -151,6 +148,8 @@ async function main() {
           }
         });
       });
+
+
     } catch (e) {
       console.error(e);
     }
