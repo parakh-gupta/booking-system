@@ -488,6 +488,7 @@ import { validateIpv4 } from "./../utils/helpers";
       async book(){
         await bookDevice({
           deviceId: this.bookDevice.id,
+          emailId: this.$store.state.user.emailId,
           dates: this.dates
         }).then(async (res) => {
           console.log(res)

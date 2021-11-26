@@ -57,3 +57,7 @@ export async function devicesBookedForUser(data) {
 	const response = await axios.post(`${API_BASE_URL}/devices/email`, data).catch(() => { })
 	return response;
 }
+
+export async function releaseDevice(id){
+
+}
