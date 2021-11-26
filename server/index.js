@@ -8,6 +8,7 @@ const signupRouter = require("./routers/signupRouter");
 const loginRouter = require("./routers/loginRouter");
 const logoutRouter = require("./routers/logoutRouter");
 const deviceRouter = require("./routers/devicesRouter")
+const bookingRouter = require("./routers/bookRouter")
 
 const app = express();
 app.set("port", process.env.PORT || 5000);
@@ -28,6 +29,7 @@ app
   .use("/login", loginRouter)
   .use("/logout", logoutRouter)
   .use("/devices",deviceRouter)
+  .use("/book",bookingRouter)
   .listen(app.get("port"),
     console.log("Listening to port", process.env.PORT || 5000)
   );
