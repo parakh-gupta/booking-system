@@ -255,6 +255,7 @@
                     <v-date-picker
                       v-model="dates"
                       range
+                      :allowed-dates="disablePastDates"
                     ></v-date-picker>
                     </v-col>
                     <v-col
@@ -321,7 +322,7 @@
 </template>
 
 <script>
-import { deleteDevice, getDevice, addDevice, updateDevice, bookDevice, sendMail} from "../utils/api";
+import { deleteDevice, getDevice, addDevice, updateDevice, bookDevice, sendMail, getDeviceFromID} from "../utils/api";
 import { mapState } from 'vuex';
 import { validateIpv4 } from "./../utils/helpers";
 
@@ -388,14 +389,15 @@ import { validateIpv4 } from "./../utils/helpers";
       ],
       ownerRules: [
         v => !!v || 'Owner is required',
-      ]
+      ],
+      dates: [(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)],
     }),
     created () {
       if(this.userRole=="admin"){this.headers.push({ text: 'Actions', value: 'actions' })}
       this.initialize()
     },
     computed: {
-      dateRangeText () {
+      dateRangeText() {
         return this.dates.join(' ~ ')
       },
       ...mapState('user', ['userId', 'emailId', 'userRole']),
@@ -480,16 +482,23 @@ import { validateIpv4 } from "./../utils/helpers";
         this.newDeviceDialog =false
       },
       bookDeviceForm(item){
-        this.bookDeviceId = item.id
+        this.bookDevice = item
         this.showBookDevice = true
       },
       async book(){
-        bookDevice({
-          deviceId: this.bookDeviceId,
+        await bookDevice({
+          deviceId: this.bookDevice.id,
           dates: this.dates
         }).then(async (res) => {
           await this.sendEmailExistingOwner(res.data[0], this.$store.state.user.emailId);
           await this.sendEmailNewOwner(res.data[0], this.$store.state.user.emailId);
+        })
+        this.initialize()
+        const updatedDevice = await getDeviceFromID(this.bookDevice.id)
+        this.devices.forEach((device)=>{
+          if(device.id == updatedDevice.id){
+            device=updatedDevice
+          }
         })
         this.showBookDevice = false
         this.bookDeviceId = null
@@ -513,6 +522,9 @@ import { validateIpv4 } from "./../utils/helpers";
           email: newUser
         }
         await sendMail(data);
+      },
+      disablePastDates(val) {
+        return val >= new Date().toISOString().substr(0, 10)
       }
     },
   }

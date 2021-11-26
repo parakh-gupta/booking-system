@@ -77,7 +77,7 @@ export default {
         drawer: true,
         items: [
           { title: 'Devices', icon: 'mdi-server-network', route:'/home' },
-          { title: 'Users', icon: 'mdi-account-group-outline', route:'/user' },
+          { title: 'User', icon: 'mdi-account-group-outline', route:'/user' },
         ],
         mini: true, 
       }

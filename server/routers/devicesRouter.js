@@ -43,13 +43,13 @@ async function main() {
       await client
       .db("device-booking")
       .collection("devices")
-        .findOne({id: req.params.id}), async (err, response) => {
-        if (response == null) {
+        .find({id: req.params.id}).toArray( async (err, response) => {
+        if (response.length<=0) {
           res.status(404).send({ msg: "No device available" });
         } else {
-          res.status(200).send(response);
+          res.status(200).send(response[0]);
         }
-      };
+      });
     });
 
     //create new device
