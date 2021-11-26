@@ -28,37 +28,21 @@
         >
           <v-text-field
             v-model="name"
-            :counter="30"
             label="Name"
-            required
+            readonly
           ></v-text-field>
 
           <v-text-field
-            v-model="email"
+            v-model="emailId"
             label="E-mail"
-            required
+            readonly
           ></v-text-field>
 
-          <v-select
-            v-model="select"
-            :items="RightsItems"
-            label="Rights"
-            required
-          ></v-select>
-
-          <v-btn
-            color="primary"
-            class="mr-4"
-          >
-            Confirm
-          </v-btn>
-
-          <v-btn
-            color="primary"
-            @click="reset"
-          >
-            Reset
-          </v-btn>
+          <v-text-field
+            v-model="userRole"
+            label="Role"
+            readonly
+          ></v-text-field>
         </v-form>
         </v-card>
       </v-tab-item>
@@ -100,6 +84,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
    export default {
     data () {
       return {
@@ -107,16 +92,13 @@
         items: [
           'Update user Info','Reset Password'
         ],
-        RightsItems: [
-          'Read','Write'
-        ],
-        name: '',
-        email: '',
-        select: null,
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
       }
+    },
+    computed:{
+      ...mapState('user', ['userId', 'emailId', 'userRole']),
     },
     methods: {
       reset(){

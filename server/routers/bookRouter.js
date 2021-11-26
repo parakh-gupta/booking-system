@@ -16,15 +16,15 @@ async function main() {
         } else if (!req.body.dates) {
             res.status(400).send({ msg: "Dates not present in request" });
         } else {
-          await client
-          .db("device-booking")
+            await client
+            .db("device-booking")
             .collection("devices")
-              .find({id: req.body.deviceId}).toArray( async (err, response) => {
-              if (response == null) {
+            .updateMany({id: req.body.deviceId},{ $set: {availability: false}}, async (err, response) => {
+            if (response.matchedCount == 0) {
                 res.status(404).send({ msg: "No device available" });
-              } else {
+            } else {
                 res.status(200).send(response);
-              }
+            }
             });
           }
         });  

@@ -23,6 +23,11 @@ export async function getDevice() {
      return response.data
 }
 
+export async function getDeviceFromID(id) {
+    const response = await axios.get(`${API_BASE_URL}/devices/${id}`)
+     return response.data
+}
+
 export async function addDevice(device) {
 	const response = await axios.post(`${API_BASE_URL}/devices`, device).catch(() => { })
 	return response;

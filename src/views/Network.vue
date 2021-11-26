@@ -252,6 +252,7 @@
                     <v-date-picker
                       v-model="dates"
                       range
+                      :allowed-dates="disablePastDates"
                     ></v-date-picker>
                     </v-col>
                     <v-col
@@ -318,7 +319,7 @@
 </template>
 
 <script>
-import { deleteDevice, getDevice, addDevice, updateDevice,bookDevice} from "../utils/api";
+import { deleteDevice, getDevice, addDevice, updateDevice,bookDevice, getDeviceFromID} from "../utils/api";
 import { mapState } from 'vuex';
 
   export default {
@@ -366,20 +367,18 @@ import { mapState } from 'vuex';
       formTitle:'New Device',
       editDialog: false,
       showBookDevice: false,
-      bookDeviceId: null,
-      dates: ['2021-11-26', '2021-11-27'],
-
+      bookDevice: null,
+      dates: [(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)],
     }),
     created () {
       if(this.userRole=="admin"){this.headers.push({ text: 'Actions', value: 'actions' })}
       this.initialize()
     },
     computed: {
-      dateRangeText () {
+      dateRangeText() {
         return this.dates.join(' ~ ')
       },
-    ...mapState('user', ['userId', 'emailId', 'userRole']),
-
+      ...mapState('user', ['userId', 'emailId', 'userRole']),
     },
     methods: {
       async initialize () {
@@ -420,13 +419,20 @@ import { mapState } from 'vuex';
         this.newDeviceDialog =false
       },
       bookDeviceForm(item){
-        this.bookDeviceId = item.id
+        this.bookDevice = item
         this.showBookDevice = true
       },
-      book(){
-        bookDevice({
-          deviceId: this.bookDeviceId,
+      async book(){
+        await bookDevice({
+          deviceId: this.bookDevice.id,
           dates: this.dates
+        })
+        this.initialize()
+        const updatedDevice = await getDeviceFromID(this.bookDevice.id)
+        this.devices.forEach((device)=>{
+          if(device.id == updatedDevice.id){
+            device=updatedDevice
+          }
         })
         this.showBookDevice = false
         this.bookDeviceId = null
@@ -434,6 +440,9 @@ import { mapState } from 'vuex';
       cancelBooking(){
         this.showBookDevice = false
         this.bookDeviceId = null
+      },
+      disablePastDates(val) {
+        return val >= new Date().toISOString().substr(0, 10)
       }
     },
   }
