@@ -35,9 +35,9 @@ const validatePasswordHash = async (req, res, response) => {
           httpOnly: true,
           secure: false,
         });
-        res.status(200).send({ msg: "User logged in.", userRole: response.userRole});
+        res.status(200).send({ msg: "User logged in.", userId: response.id, emailId: response.email, userRole: response.userRole});
       } else {
-        res.status(404).send({ msg: "Invalid credentials." });
+        res.status(404).send({ msg: "Invalid credentials.", statusCode: 404 });
       }
       return result;
     });
@@ -52,6 +52,7 @@ const findUser = async (client, req, res) => {
       .db("device-booking")
       .collection("users")
       .findOne({ email: req.body.email }, async (err, response) => {
+        console.log(response)
         if (response === null) {
           res.status(404).send({ msg: "User not found." });
         } else {

@@ -12,5 +12,7 @@ module.exports = {
         target: "http://localhost:8885",
       },
     },
+    host: 'localhost',
+    disableHostCheck: true
   },
 };
