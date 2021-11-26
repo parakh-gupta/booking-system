@@ -99,6 +99,16 @@
                       label="User"
                     ></v-text-field>
                   </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="newItem.team"
+                      label="Team"
+                    ></v-text-field>
+                  </v-col>
                 <v-col
                     cols="12"
                     sm="6"
@@ -182,6 +192,16 @@
                     <v-text-field
                       v-model="editedItem.user"
                       label="User"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.team"
+                      label="Team"
                     ></v-text-field>
                   </v-col>
                 <v-col
@@ -278,6 +298,7 @@ import { deleteDevice, getDevice, addDevice, updateDevice} from "../utils/api";
           { text: 'Device Name', value: 'deviceName' },
           { text: 'Device Type', value: 'type' },
           { text: 'User', value: 'user' },
+          { text: 'Team', value: 'team' },
           { text: 'IP address', value: 'ipaddress' },
           { text: 'Availability', value: 'availability' },
           { text: 'Actions', value: 'actions' },
@@ -291,21 +312,24 @@ import { deleteDevice, getDevice, addDevice, updateDevice} from "../utils/api";
         type: '',
         ipaddress: '0.0.0.0',
         user: '',
-        availabilty: ''
+        availabilty: '',
+        team: ''
       },
       newItem: {
         deviceName: '',
         type: '',
         ipaddress: '0.0.0.0',
         user: '',
-        availabilty: ''
+        availabilty: '',
+        team:''
       },
       defaultItem: {
         deviceName: '',
         type: '',
         ipaddress: '0.0.0.0',
         user: '',
-        availabilty: ''
+        availabilty: '',
+        team:''
       },
       search:'',
       formTitle:'New Device',
@@ -323,10 +347,8 @@ import { deleteDevice, getDevice, addDevice, updateDevice} from "../utils/api";
         this.editedItem = item
       },
       saveEdit(){
-        console.log(this.editedItem)
         updateDevice(this.editedItem)
         this.editDialog = false
-        //this.devices.pop(this.deleteObj)
       },
       closeEdit(){
         this.editDialog = false

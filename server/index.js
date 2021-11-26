@@ -7,7 +7,7 @@ const cors = require("cors");
 const signupRouter = require("./routers/signupRouter");
 const loginRouter = require("./routers/loginRouter");
 const logoutRouter = require("./routers/logoutRouter");
-const devicesRouter = require("./routers/devicesRouter");
+const deviceRouter = require("./routers/devicesRouter")
 
 const app = express();
 app.set("port", process.env.PORT || 5000);
@@ -27,7 +27,7 @@ app
   .use("/signup", signupRouter)
   .use("/login", loginRouter)
   .use("/logout", logoutRouter)
-  .use("/devices", devicesRouter)
+  .use("/devices",deviceRouter)
   .listen(app.get("port"),
     console.log("Listening to port", process.env.PORT || 5000)
   );

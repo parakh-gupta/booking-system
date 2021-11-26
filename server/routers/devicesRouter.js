@@ -55,7 +55,6 @@ async function main() {
 
     //create new device
      devicesRouter.post("/", async(req, res) => {
-         console.log(req.body)
         if (!req.body.deviceName) {
             res.status(400).send({ msg: "Device Name not present in request" });
         } else if (!req.body.type) {
@@ -93,7 +92,6 @@ async function main() {
     });
 
     devicesRouter.put("/", async(req, res) => {
-        console.log(req.body)
         if (!req.body.id) {
             res.status(400).send({ msg: "Device ID not present in request" });
         } else if (!req.body.deviceName) {
@@ -110,12 +108,19 @@ async function main() {
           res.status(400).send({ msg: "Team not present in request" });
         } else {
             const myquery = { id: req.body.id };
-            const newvalues = { $set: req.body };
-            console.log(newvalues)
+            const newvalues = { $set: {
+              deviceName: req.body.deviceName,
+              type: req.body.type,
+              user: req.body.user,
+              team: req.body.team,
+              ipaddress: req.body.ipaddress,
+              availability: req.body.availability
+              }
+            };
         await client
         .db("device-booking")
         .collection("devices")
-        .updateOne(myquery, newvalues, async (err, response) => {
+        .updateMany(myquery, newvalues, async (err, response) => {
           if (response.modifiedCount == 0) {
             res.status(404).send({ msg: "No device available" });
           } else {
