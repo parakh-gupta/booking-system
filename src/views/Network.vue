@@ -39,6 +39,7 @@
         <template v-slot:top>  <v-dialog
           v-model="newDeviceDialog"
           max-width="500px"
+          v-if="userRole === 'admin'"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -264,6 +265,7 @@
                 small
                 class="mr-2"
                 @click="editItem(item)"
+                v-if="userRole === 'admin'"
               >
                 mdi-pencil
               </v-icon>
@@ -271,6 +273,7 @@
                 small
                 @click="deleteItem(item)"
                 v-on="on"
+                v-if="userRole === 'admin'"
               >
                 mdi-delete
               </v-icon>
@@ -285,6 +288,7 @@
 
 <script>
 import { deleteDevice, getDevice, addDevice, updateDevice} from "../utils/api";
+import { mapState } from 'vuex';
 
   export default {
     data: () => ({
@@ -337,6 +341,10 @@ import { deleteDevice, getDevice, addDevice, updateDevice} from "../utils/api";
     }),
     created () {
       this.initialize()
+    },
+    computed: {
+    ...mapState('user', ['userId', 'emailId', 'userRole']),
+
     },
     methods: {
       async initialize () {

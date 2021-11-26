@@ -9,12 +9,12 @@ const config = {
 }
 
 export async function login(req) {
-	const response = await axios.post(`${API_BASE_URL}/login`, req, config).catch(() => { })
+	const response = await axios.post(`${API_BASE_URL}/login`, req, config).then((res) => res).catch((e) => e)
 	return response;
 }
 
 export async function signup(req) {
-	const response = await axios.post(`${API_BASE_URL}/signup`, req).catch(() => { })
+	const response = await axios.post(`${API_BASE_URL}/signup`, req).then((res) => res).catch((err) => err)
 	return response;
 }
 

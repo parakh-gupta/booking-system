@@ -31,7 +31,7 @@
           </v-row>
           <v-row>
             <v-col
-              ><v-btn color="primary" @click="checkAuth">
+              ><v-btn color="primary" @click="checkAuth" :disabled=disableLogin>
                  Login
               </v-btn>
             </v-col>
@@ -76,6 +76,7 @@
 import { login } from "../utils/api";
 import { ACCESS_TOKEN } from "../utils/constants";
 import { validateEmail, getCookie } from "../utils/helpers";
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: "LoginCard",
@@ -97,7 +98,18 @@ export default {
       ],
     };
   },
+  computed: {
+    ...mapState('user', ['userId', 'emailId', 'userRole']),
+    disableLogin() {
+      if (this.email === null || this.email === "" || this.password === null || this.password === "" || !validateEmail(this.email)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
   methods: {
+    ...mapActions('user' ,['updateUserId', 'updateEmailId', 'updateUserRole']),
     checkAuth() {
       const loginRequest = {
         email: this.email,
@@ -106,24 +118,28 @@ export default {
 
       this.loading = true;
       login(loginRequest)
-        .then(() => {
-          this.triedLogin = true;
-          this.authenticated = true;
-          const token = getCookie("accessToken")
-          setTimeout(() => {
-            this.loading = false;
-            if (token) localStorage.setItem(ACCESS_TOKEN, token);
-            this.$router.replace({ path: "/home" });
-          }, 2000);
-        })
-        .catch((error) => {
-          if (error.status === 401) {
+        .then((res) => {
+          if (res.status === 200) {
             this.triedLogin = true;
-            this.authenticated = false;
-            this.loading = false;
+            this.authenticated = true;
+            const token = getCookie("accessToken");
+            this.updateUserId(res.data.userId);
+            this.updateEmailId(res.data.emailId);
+            this.updateUserRole(res.data.userRole);
+            setTimeout(() => {
+              this.loading = false;
+              if (token) localStorage.setItem(ACCESS_TOKEN, token);
+              this.$router.replace({ path: "/home" });
+            }, 2000);
           }
-        }
-      );
+          else {
+            setTimeout(() => {
+              this.triedLogin = true;
+              this.authenticated = false;
+              this.loading = false;
+            }, 2000)
+          }
+        })
     },
     signup() {
       this.$router.push({ path: "/signup" });
