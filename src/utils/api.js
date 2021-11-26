@@ -17,10 +17,11 @@ export async function signup(req) {
 	const response = await axios.post(`${API_BASE_URL}/signup`, req).catch(() => { })
 	return response;
 }
-    export async function getDevice() {
-        const response = await axios.get(`${API_BASE_URL}/devices/`)
-        return response.data
-    }
+
+export async function getDevice() {
+    const response = await axios.get(`${API_BASE_URL}/devices/`)
+     return response.data
+}
 
 export async function addDevice(device) {
 	const response = await axios.post(`${API_BASE_URL}/devices`, device).catch(() => { })
