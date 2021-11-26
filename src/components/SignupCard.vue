@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-card :loading="loading" class="mx-auto my-auto" width="500">
-      <v-card-title center>
+      <v-card-title center class="pl-6">
           Sign Up
       </v-card-title>
       <v-form v-model="valid">
@@ -47,10 +47,10 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row class="px-3">
             <v-col
               ><v-btn color="primary" @click="checkCredentials">
-                 Sign Up
+                 Register
               </v-btn>
             </v-col>
           </v-row>

@@ -310,7 +310,7 @@
           >
             Book
           </v-btn>
-          <span class="red--text" v-else>ALREADY BOOKED</span>
+          <span class="red--text text-center" v-else>ALREADY BOOKED</span>
         </template>
       </v-data-table>
     </v-card>

@@ -19,14 +19,13 @@ async function main() {
           await client
           .db("device-booking")
             .collection("devices")
-              .findOne({id: "542c99a6-5ff7-464d-b815-4c942a090094"}), async (err, response) => {
+              .find({id: req.body.deviceId}).toArray( async (err, response) => {
               if (response == null) {
                 res.status(404).send({ msg: "No device available" });
               } else {
-                  console.log(response)
                 res.status(200).send(response);
               }
-            };
+            });
           }
         });  
 
