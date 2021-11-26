@@ -7,15 +7,12 @@ const state = {
 const mutations = {
   SET_USERID(state, value) {
     state.userId = value
-    console.log(state.userId)
   },
   SET_EMAILID(state, value) {
     state.emailId = value
-    console.log(state.emailId)
   },
   SET_USERROLE(state, value) {
     state.userRole = value
-    console.log(state.userRole)
   }
 }
 

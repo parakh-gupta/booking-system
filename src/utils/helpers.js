@@ -8,3 +8,8 @@ export function getCookie(cookie) {
   if (match) return match[1];
   return;
 }
+
+export function validateIpv4(ip) {
+  const re = /\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b/;
+  return re.test(String(ip).toLowerCase());
+}

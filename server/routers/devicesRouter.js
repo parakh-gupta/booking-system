@@ -4,15 +4,15 @@ const { generateUuid } = require("../services/uuidService");
 
 const devicesRouter = Router();
 
+const defaultUser = "parakh.gupta@incedoinc.com"
+
 /* Request example */
 /*
 Post call
 {
   "deviceName": "rsp",
   "type": "dut",
-  "user": "user1",
   "ipaddress": "0.0.0.0",
-  "availability" : true,
   "team" : "hmi"
 }
 */
@@ -44,7 +44,6 @@ async function main() {
       .db("device-booking")
       .collection("devices")
         .findOne({id: req.params.id}), async (err, response) => {
-        console.log(req.params.id)
         if (response == null) {
           res.status(404).send({ msg: "No device available" });
         } else {
@@ -59,8 +58,6 @@ async function main() {
             res.status(400).send({ msg: "Device Name not present in request" });
         } else if (!req.body.type) {
           res.status(400).send({ msg: "Device Type not present in request" });
-        } else if (!req.body.user) {
-            res.status(400).send({ msg: "User not present in request" });
         } else if (!req.body.ipaddress) {
             res.status(400).send({ msg: "IP address not present in request" });
         } else if (!req.body.team) {
@@ -70,7 +67,7 @@ async function main() {
             id: 0,
             deviceName: req.body.deviceName,
             type: req.body.type,
-            user: req.body.user,
+            user: defaultUser,
             ipaddress: req.body.ipaddress,
             availability: true,
             team: req.body.team,
@@ -89,40 +86,40 @@ async function main() {
       }
     });
 
-    devicesRouter.put("/", async(req, res) => {
-        if (!req.body.id) {
-            res.status(400).send({ msg: "Device ID not present in request" });
-        } else if (!req.body.deviceName) {
-            res.status(400).send({ msg: "Device Name not present in request" });
-        } else if (!req.body.type) {
-          res.status(400).send({ msg: "Device Type not present in request" });
-        } else if (!req.body.user) {
-            res.status(400).send({ msg: "User not present in request" });
-        } else if (!req.body.ipaddress) {
-            res.status(400).send({ msg: "IP address not present in request" });
-        } else if (!req.body.team) {
-          res.status(400).send({ msg: "Team not present in request" });
-        } else {
-            const myquery = { id: req.body.id };
-            const newvalues = { $set: {
-              deviceName: req.body.deviceName,
-              type: req.body.type,
-              user: req.body.user,
-              team: req.body.team,
-              ipaddress: req.body.ipaddress
-              }
-            };
+    devicesRouter.put("/", async (req, res) => {
+      if (!req.body.id) {
+          res.status(400).send({ msg: "Device ID not present in request" });
+      } else if (!req.body.deviceName) {
+          res.status(400).send({ msg: "Device Name not present in request" });
+      } else if (!req.body.type) {
+        res.status(400).send({ msg: "Device Type not present in request" });
+      } else if (!req.body.user) {
+          res.status(400).send({ msg: "User not present in request" });
+      } else if (!req.body.ipaddress) {
+          res.status(400).send({ msg: "IP address not present in request" });
+      } else if (!req.body.team) {
+        res.status(400).send({ msg: "Team not present in request" });
+      } else {
+        const myquery = { id: req.body.id };
+        const newvalues = { $set: {
+          deviceName: req.body.deviceName,
+          type: req.body.type,
+          user: req.body.user,
+          team: req.body.team,
+          ipaddress: req.body.ipaddress
+          }
+        };
         await client
         .db("device-booking")
         .collection("devices")
-        .updateMany(myquery, newvalues, async (err, response) => {
+          .updateMany(myquery, newvalues, async (err, response) => {
           if (response.modifiedCount == 0) {
             res.status(404).send({ msg: "No device available" });
           } else {
             res.status(200).send(response);
           }
-        });
-    }
+          });
+      }
     });
 
     devicesRouter.delete("/:id", async(req, res) => {

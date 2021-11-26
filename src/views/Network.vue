@@ -64,53 +64,49 @@
               <v-container>
                 <v-row>
                   <v-col
-                    cols="12"
+                    cols="6"
                     sm="6"
                     md="4"
                   >
                     <v-text-field
                       v-model="newItem.deviceName"
                       label="Device name"
+                      :rules=deviceNameRules
                     ></v-text-field>
                   </v-col>
                   <v-col
-                    cols="12"
+                    cols="6"
                     sm="6"
                     md="4"
                   >
                     <v-text-field
                       v-model="newItem.type"
                       label="Device Type"
+                      :rules=deviceTypeRules
                     ></v-text-field>
                   </v-col>
+                </v-row>
+                <v-row>
                   <v-col
-                    cols="12"
+                    cols="6"
                     sm="6"
                     md="4"
                   >
                     <v-text-field
                       v-model="newItem.ipaddress"
                       label="IP Address"
+                      :rules=ipRules
                     ></v-text-field>
                   </v-col>
                   <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="newItem.user"
-                      label="User"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
+                    cols="6"
                     sm="6"
                     md="4"
                   >
                     <v-text-field
                       v-model="newItem.team"
                       label="Team"
+                      :rules=teamRules
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -130,6 +126,7 @@
                 color="blue darken-1"
                 text
                 @click="save"
+                :disabled=disableSaveNew
               >
                 Save
               </v-btn>
@@ -156,6 +153,7 @@
                     <v-text-field
                       v-model="editedItem.deviceName"
                       label="Device name"
+                      :rules=deviceNameRules
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -166,6 +164,7 @@
                     <v-text-field
                       v-model="editedItem.type"
                       label="Device Type"
+                      :rules=deviceTypeRules
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -176,6 +175,7 @@
                     <v-text-field
                       v-model="editedItem.ipaddress"
                       label="IP Address"
+                      :rules=ipRules
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -186,6 +186,7 @@
                     <v-text-field
                       v-model="editedItem.user"
                       label="User"
+                      :rules=ownerRules
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -196,6 +197,7 @@
                     <v-text-field
                       v-model="editedItem.team"
                       label="Team"
+                      :rules=teamRules
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -215,6 +217,7 @@
                 color="blue darken-1"
                 text
                 @click="saveEdit"
+                :disabled=disableSaveEdit
               >
                 Save
               </v-btn>
@@ -318,8 +321,9 @@
 </template>
 
 <script>
-import { deleteDevice, getDevice, addDevice, updateDevice,bookDevice} from "../utils/api";
+import { deleteDevice, getDevice, addDevice, updateDevice, bookDevice, sendMail} from "../utils/api";
 import { mapState } from 'vuex';
+import { validateIpv4 } from "./../utils/helpers";
 
   export default {
     data: () => ({
@@ -355,6 +359,7 @@ import { mapState } from 'vuex';
         user: '',
         team:''
       },
+      newEditedItem: {},
       defaultItem: {
         deviceName: '',
         type: '',
@@ -368,7 +373,22 @@ import { mapState } from 'vuex';
       showBookDevice: false,
       bookDeviceId: null,
       dates: ['2021-11-26', '2021-11-27'],
-
+      ipRules: [
+        v => !!v || 'IP address is required',
+        v => validateIpv4(v) || 'IP address is invalid'
+      ],
+      deviceNameRules: [
+        v => !!v || 'Device name is required',
+      ],
+      deviceTypeRules: [
+        v => !!v || 'Device type is required',
+      ],
+      teamRules: [
+        v => !!v || 'Team is required',
+      ],
+      ownerRules: [
+        v => !!v || 'Owner is required',
+      ]
     }),
     created () {
       if(this.userRole=="admin"){this.headers.push({ text: 'Actions', value: 'actions' })}
@@ -378,19 +398,55 @@ import { mapState } from 'vuex';
       dateRangeText () {
         return this.dates.join(' ~ ')
       },
-    ...mapState('user', ['userId', 'emailId', 'userRole']),
-
+      ...mapState('user', ['userId', 'emailId', 'userRole']),
+      disableSaveNew() {
+        if (
+          this.newItem.deviceName === null ||
+          this.newItem.deviceName === "" ||
+          this.newItem.type === null ||
+          this.newItem.type === "" ||
+          this.newItem.ipaddress === null ||
+          this.newItem.ipaddress === "" ||
+          this.newItem.team === null ||
+          this.newItem.team === "" ||
+          !validateIpv4(this.newItem.ipaddress)
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      disableSaveEdit() {
+        if (
+          this.editedItem.deviceName === null ||
+          this.editedItem.deviceName === "" ||
+          this.editedItem.type === null ||
+          this.editedItem.type === "" ||
+          this.editedItem.ipaddress === null ||
+          this.editedItem.ipaddress === "" ||
+          this.editedItem.team === null ||
+          this.editedItem.team === "" ||
+          this.editedItem.user === null ||
+          this.editedItem.user === "" ||
+          !validateIpv4(this.newItem.ipaddress)
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     },
     methods: {
       async initialize () {
         this.devices = await getDevice()
       },
-     editItem (item){
+      editItem (item){
         this.editDialog = true
-        this.editedItem = item
+        this.newEditedItem = this.editedItem;
+        this.newEditedItem.id = item.id;
       },
       saveEdit(){
-        updateDevice(this.editedItem)
+        updateDevice(this.newEditedItem)
         this.editDialog = false
       },
       closeEdit(){
@@ -404,16 +460,20 @@ import { mapState } from 'vuex';
         this.alert = true
         deleteDevice(this.deleteObj.id)
         this.dialogDelete = false
-        this.devices.pop(this.deleteObj)
-      }, 
+        const pos = this.devices.indexOf(this.deleteObj);
+        this.devices.splice(pos, 1)
+      },
       closeDelete () {
         this.dialogDelete = false
       },
-      save(){
-        addDevice(this.newItem)
-        this.devices.push(this.newItem)
-        this.newItem = this.defaultItem
-        this.newDeviceDialog = false
+      async save(){
+        let currItem = {};
+        await addDevice(this.newItem).then(res => {
+          currItem = res.data.data;
+          this.devices.push(currItem)
+          this.newItem = this.defaultItem
+          this.newDeviceDialog = false
+        })
       },
       close(){
         this.newItem = this.defaultItem
@@ -423,10 +483,13 @@ import { mapState } from 'vuex';
         this.bookDeviceId = item.id
         this.showBookDevice = true
       },
-      book(){
+      async book(){
         bookDevice({
           deviceId: this.bookDeviceId,
           dates: this.dates
+        }).then(async (res) => {
+          await this.sendEmailExistingOwner(res.data[0], this.$store.state.user.emailId);
+          await this.sendEmailNewOwner(res.data[0], this.$store.state.user.emailId);
         })
         this.showBookDevice = false
         this.bookDeviceId = null
@@ -434,6 +497,22 @@ import { mapState } from 'vuex';
       cancelBooking(){
         this.showBookDevice = false
         this.bookDeviceId = null
+      },
+      async sendEmailExistingOwner(deviceData, newUser) {
+        const data = {
+          mailBody: `<p>Hello, your device ${deviceData.deviceName} with IP address ${deviceData.ipaddress} has been booked by ${newUser}.<p/>`,
+          subject: `Update on your booked device`,
+          email: deviceData.user
+        }
+        await sendMail(data);
+      },
+      async sendEmailNewOwner(deviceData, newUser) {
+        const data = {
+          mailBody: `<p>Hello, you have booked the device ${deviceData.deviceName} with IP address ${deviceData.ipaddress}. The existing user ${deviceData.user} has been notified.<p/>`,
+          subject: `Update on your newly booked device`,
+          email: newUser
+        }
+        await sendMail(data);
       }
     },
   }

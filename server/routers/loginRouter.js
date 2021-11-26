@@ -52,7 +52,6 @@ const findUser = async (client, req, res) => {
       .db("device-booking")
       .collection("users")
       .findOne({ email: req.body.email }, async (err, response) => {
-        console.log(response)
         if (response === null) {
           res.status(404).send({ msg: "User not found." });
         } else {

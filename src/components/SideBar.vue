@@ -85,7 +85,6 @@ export default {
  methods:{
    toggleDarkTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-      //console.log(this.$vuetify.theme.dark);
     },
     logout(){
       this.$router.push({ path: "/logout" });
