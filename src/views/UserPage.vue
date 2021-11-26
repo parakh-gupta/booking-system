@@ -43,6 +43,50 @@
             label="Role"
             readonly
           ></v-text-field>
+          <v-expansion-panels flat>
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              Assigned Devices
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-data-table
+                :headers="headers"
+                :items="devices"
+                :items-per-page="5"
+                class="elevation-1"
+                v-if="devices.length>0"
+              >
+               <v-dialog v-model="releaseDialog" max-width="300px">
+                <v-card>
+                  <v-card-title class="text-h5">Alert</v-card-title>
+                  <v-divider></v-divider>
+                  <v-card-text>
+                    Are you sure you want to release this device?
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="blue darken-1" @click="close">Cancel</v-btn>
+                    <v-btn text color="blue darken-1" @click="release">OK</v-btn>
+                    <v-spacer></v-spacer>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <template v-slot:item.release="{ item }">
+                  <v-btn
+                  small text
+                  color="error"
+                  outlined
+                  @click="releaseItem(item)"
+                >
+                  Release
+                </v-btn>
+              </template>
+              </v-data-table>
+              <div v-else> NO DEVICES ASSIGNED</div>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          </v-expansion-panels>
         </v-form>
         </v-card>
       </v-tab-item>
@@ -84,6 +128,7 @@
 </template>
 
 <script>
+import {devicesBookedForUser} from "../utils/api";
 import { mapState } from 'vuex';
    export default {
     data () {
@@ -94,15 +139,47 @@ import { mapState } from 'vuex';
         ],
         currentPassword: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        devices: '',
+        headers: [
+          {
+            text: 'Device Name',
+            align: 'start',
+            sortable: false,
+            value: 'deveName',
+          },
+          { text: 'Device Type', value: 'type' },
+          { text: 'IP Address', value: 'ipaddress' },
+          { text: 'Release Device', value: 'release' },
+        ],
+        releaseObj:'',
+        releaseDialog: false
       }
     },
     computed:{
-      ...mapState('user', ['userId', 'emailId', 'userRole']),
+      ...mapState('user', ['userId', 'emailId', 'userRole', 'name']),
+    },
+    created(){
+      this.getDevices();
     },
     methods: {
       reset(){
         this.$refs.form.reset()
+      },
+      async getDevices(){
+        const res= await devicesBookedForUser({email: this.emailId})
+        this.devices = res.data
+        console.log(this.devices)
+      },
+      releaseItem(item){
+        this.releaseObj = item
+        this.releaseDialog = true
+      },
+      release(){
+        this.releaseDialog = false
+      },
+      close(){
+        this.releaseDialog = false
       }
     },
   }

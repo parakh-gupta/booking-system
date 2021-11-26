@@ -52,6 +52,22 @@ async function main() {
       });
     });
 
+    //get device of one user
+    devicesRouter.post("/email", async(req, res) => {
+      console.log(req.body.email)
+      await client
+      .db("device-booking")
+      .collection("devices")
+        .find({user: req.body.email}).toArray( async (err, response) => {
+          console.log(response)
+        if (response==null) {
+          res.status(404).send({ msg: "No device available" });
+        } else {
+          res.status(200).send(response);
+        }
+      });
+    });
+
     //create new device
      devicesRouter.post("/", async(req, res) => {
         if (!req.body.deviceName) {
