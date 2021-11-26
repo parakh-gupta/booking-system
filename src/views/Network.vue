@@ -373,7 +373,7 @@ import { validateIpv4 } from "./../utils/helpers";
       editDialog: false,
       showBookDevice: false,
       bookDeviceId: null,
-      dates: ['2021-11-26', '2021-11-27'],
+      // dates: ['2021-11-26', '2021-11-27'],
       ipRules: [
         v => !!v || 'IP address is required',
         v => validateIpv4(v) || 'IP address is invalid'
@@ -490,8 +490,9 @@ import { validateIpv4 } from "./../utils/helpers";
           deviceId: this.bookDevice.id,
           dates: this.dates
         }).then(async (res) => {
-          await this.sendEmailExistingOwner(res.data[0], this.$store.state.user.emailId);
-          await this.sendEmailNewOwner(res.data[0], this.$store.state.user.emailId);
+          console.log(res)
+          await this.sendEmailExistingOwner(res.data, this.$store.state.user.emailId);
+          await this.sendEmailNewOwner(res.data, this.$store.state.user.emailId);
         })
         this.initialize()
         const updatedDevice = await getDeviceFromID(this.bookDevice.id)

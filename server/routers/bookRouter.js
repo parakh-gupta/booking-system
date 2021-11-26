@@ -16,6 +16,14 @@ async function main() {
         } else if (!req.body.dates) {
             res.status(400).send({ msg: "Dates not present in request" });
         } else {
+          let data = {};
+          await client
+            .db("device-booking")
+            .collection("devices")
+            .findOne({ id: req.body.deviceId }, async (err, response) => {
+              data = response;
+            });
+
             await client
             .db("device-booking")
             .collection("devices")
@@ -23,12 +31,11 @@ async function main() {
             if (response.matchedCount == 0) {
                 res.status(404).send({ msg: "No device available" });
             } else {
-                res.status(200).send(response);
+                res.status(200).send(data);
             }
             });
           }
-        });  
-
+        });
     }catch (e) {
         console.error(e);
       }
