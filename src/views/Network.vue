@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-    
     <v-snackbar
       v-model="alert"
       timeout="7000"
@@ -38,18 +37,18 @@
         class="elevation-1"
       >
         <template v-slot:top>  <v-dialog
-          v-model="dialog"
+          v-model="newDeviceDialog"
           max-width="500px"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               color="primary"
               dark
-              class="mb-2"
+              class="mb-2 ml-6"
               v-bind="attrs"
               v-on="on"
             >
-              New Item
+              New Device
             </v-btn>
           </template>
           <v-card>
@@ -66,8 +65,8 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.name"
-                      label="Dessert name"
+                      v-model="newItem.deviceName"
+                      label="Device name"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -76,8 +75,8 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.calories"
-                      label="Calories"
+                      v-model="newItem.type"
+                      label="Device Type"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -86,8 +85,8 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.fat"
-                      label="Fat (g)"
+                      v-model="newItem.ipaddress"
+                      label="IP Address"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -96,18 +95,18 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.carbs"
-                      label="Carbs (g)"
+                      v-model="newItem.user"
+                      label="User"
                     ></v-text-field>
                   </v-col>
-                  <v-col
+                <v-col
                     cols="12"
                     sm="6"
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.protein"
-                      label="Protein (g)"
+                      v-model="newItem.availability"
+                      label="Availibility"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -132,6 +131,91 @@
               </v-btn>
             </v-card-actions>
           </v-card>
+        </v-dialog>
+        <v-dialog
+          v-model="editDialog"
+          max-width="500px"
+        >
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">Edit Device</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.deviceName"
+                      label="Device name"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.type"
+                      label="Device Type"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.ipaddress"
+                      label="IP Address"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.user"
+                      label="User"
+                    ></v-text-field>
+                  </v-col>
+                <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.availability"
+                      label="Availibility"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="closeEdit"
+              >
+                Cancel
+              </v-btn>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="saveEdit"
+              >
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
         </v-dialog> 
           <v-dialog v-model="dialogDelete" max-width="300px">
             <v-card>
@@ -144,23 +228,25 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" outlined @click="closeDelete">Cancel</v-btn>
-                <v-btn color="blue darken-1" outlined @click="deleteItemConfirm">OK</v-btn>
+                <v-btn \escolor="blue darken-1" outlined @click="deleteItemConfirm">OK</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </template>
-        
+        <template v-slot:item.sno="{ index }">
+          <span>{{index+1}}</span>
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }"> 
               <v-icon
-        small
-        class="mr-2"
-        @click="editItem(item)"
-      >
-        mdi-pencil
-      </v-icon>
+                small
+                class="mr-2"
+                @click="editItem(item)"
+              >
+                mdi-pencil
+              </v-icon>
               <v-icon
                 small
                 @click="deleteItem(item)"
@@ -178,7 +264,7 @@
 </template>
 
 <script>
-import { deleteDevice, getDevice } from "../utils/api";
+import { deleteDevice, getDevice, addDevice, updateDevice} from "../utils/api";
 
   export default {
     data: () => ({
@@ -187,60 +273,86 @@ import { deleteDevice, getDevice } from "../utils/api";
           {
             text: 'SNo',
             align: 'start',
+            value: 'sno'
           },
-          { text: 'deviceName', value: 'deviceName' },
-          { text: 'type', value: 'type' },
-          { text: 'user', value: 'user' },
-          { text: 'ipaddress', value: 'ipaddress' },
-          { text: 'availability', value: 'availability' },
-          { text: 'actions', value: 'actions' },
+          { text: 'Device Name', value: 'deviceName' },
+          { text: 'Device Type', value: 'type' },
+          { text: 'User', value: 'user' },
+          { text: 'IP address', value: 'ipaddress' },
+          { text: 'Availability', value: 'availability' },
+          { text: 'Actions', value: 'actions' },
         ],
-      editedIndex: -1,
       alert:false,
-      deleteI:null,
+      deleteObj:null,
       devices:[],
-      
-      dialog: false,
+      newDeviceDialog: false,
       editedItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+        deviceName: '',
+        type: '',
+        ipaddress: '0.0.0.0',
+        user: '',
+        availabilty: ''
+      },
+      newItem: {
+        deviceName: '',
+        type: '',
+        ipaddress: '0.0.0.0',
+        user: '',
+        availabilty: ''
       },
       defaultItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+        deviceName: '',
+        type: '',
+        ipaddress: '0.0.0.0',
+        user: '',
+        availabilty: ''
       },
       search:'',
-      formTitle:'New Device'
+      formTitle:'New Device',
+      editDialog: false
     }),
     created () {
       this.initialize()
     },
     methods: {
       async initialize () {
-        this.devices= await getDevice()
+        this.devices = await getDevice()
+      },
+     editItem (item){
+        this.editDialog = true
+        this.editedItem = item
+      },
+      saveEdit(){
+        console.log(this.editedItem)
+        updateDevice(this.editedItem)
+        this.editDialog = false
+        //this.devices.pop(this.deleteObj)
+      },
+      closeEdit(){
+        this.editDialog = false
       },
       deleteItem (item) {
         this.dialogDelete = true
-        this.deleteI=item
+        this.deleteObj=item
       },
       deleteItemConfirm () {
         this.alert = true
-        deleteDevice(this.deleteI.id)
+        deleteDevice(this.deleteObj.id)
+        this.dialogDelete = false
+        this.devices.pop(this.deleteObj)
       }, 
       closeDelete () {
         this.dialogDelete = false
       },
       save(){
-
+        addDevice(this.newItem)
+        this.devices.push(this.newItem)
+        this.newItem = this.defaultItem
+        this.newDeviceDialog = false
       },
       close(){
-
+        this.newItem = this.defaultItem
+        this.newDeviceDialog =false
       }
     },
   }
