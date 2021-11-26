@@ -35,7 +35,7 @@ const validatePasswordHash = async (req, res, response) => {
           httpOnly: true,
           secure: false,
         });
-        res.status(200).send({ msg: "User logged in." });
+        res.status(200).send({ msg: "User logged in.", userRole: response.userRole});
       } else {
         res.status(404).send({ msg: "Invalid credentials." });
       }
