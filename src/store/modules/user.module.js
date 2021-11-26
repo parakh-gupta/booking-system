@@ -1,7 +1,8 @@
 const state = {
   userId: "",
   emailId: "",
-  userRole: "user"
+  userRole: "user",
+  name:"",
 }
 
 const mutations = {
@@ -13,6 +14,9 @@ const mutations = {
   },
   SET_USERROLE(state, value) {
     state.userRole = value
+  },
+  SET_NAME(state, value){
+    state.name = value
   }
 }
 
@@ -25,6 +29,9 @@ const actions = {
   },
   updateUserRole({ commit }, payload) {
     commit('SET_USERROLE', payload)
+  },
+  updateUserName({commit},payload){
+    commit('SET_NAME', payload)
   }
 }
 

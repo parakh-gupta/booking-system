@@ -109,7 +109,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user' ,['updateUserId', 'updateEmailId', 'updateUserRole']),
+    ...mapActions('user' ,['updateUserId', 'updateEmailId', 'updateUserRole', 'updateUserName']),
     checkAuth() {
       const loginRequest = {
         email: this.email,
@@ -126,6 +126,7 @@ export default {
             this.updateUserId(res.data.userId);
             this.updateEmailId(res.data.emailId);
             this.updateUserRole(res.data.userRole);
+            this.updateUserName(res.data.name);
             setTimeout(() => {
               this.loading = false;
               if (token) localStorage.setItem(ACCESS_TOKEN, token);
