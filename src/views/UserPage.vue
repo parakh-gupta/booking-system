@@ -234,7 +234,6 @@ import { mapState } from 'vuex';
           email: this.$store.state.user.emailId
         }
         await changeUserPassword(data).then(res => {
-            console.log("kkkk", res)
           if (!res || res === undefined || res.status === undefined || res.status == null || !res.status) {
             this.triedPasswordChange = true;
             this.passwordChangeSuccessful = false;
@@ -243,23 +242,18 @@ import { mapState } from 'vuex';
             this.triedPasswordChange = true;
             this.passwordChangeSuccessful = true;
           }
-          console.log(res)
         }).catch(e => e)
       },
       async getDevices(){
         const res= await devicesBookedForUser({email: this.emailId})
         this.devices = res.data
-        console.log(this.devices)
       },
       releaseItem(item){
-        console.log("pppppppppppppp")
         this.releaseObj = item
         this.releaseDialog = true
-        console.log("pppppppppppppp", this.releaseDialog)
       },
       release(){
         releaseDevice({deviceId:this.releaseObj.id}).then(async res => {
-          console.log(res)
           await this.sendEmailReleaseExistingOwner(res.data, DEFAULT_ADMIN);
           await this.sendEmailReleaseNewOwner(res.data, DEFAULT_ADMIN);
         })

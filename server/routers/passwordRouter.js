@@ -11,7 +11,6 @@ async function main() {
     await client.connect();
 
     loginRouter.post("/change/", async (req, res) => {
-      console.log(req.body);
       if (!req.body.currentPassword) {
         res.status(400).send({ msg: "Current password not present in request." });
       } else if (!req.body.newPassword) {
@@ -31,7 +30,6 @@ async function main() {
 
 const validatePasswordHash = async (client, req, res, response) => {
   try {
-    console.log(req.body, response)
     validateHash(req.body.currentPassword, response.password).then((result) => {
       if (result) {
         generateHash(req.body.newPassword).then(async (passwordHash) => {
@@ -46,7 +44,6 @@ const validatePasswordHash = async (client, req, res, response) => {
                   if (response === null) {
                     res.status(400).send({ msg: "An error occurred." });
                   } else {
-                    console.log(response)
                     res.status(200).send({ msg: "Password change successfully." });
                   }
                 }
@@ -71,7 +68,6 @@ const findUser = async (client, req, res) => {
       .db("device-booking")
       .collection("users")
       .findOne({ email: req.body.email }, async (err, response) => {
-        console.log("response = " + JSON.stringify(response))
         if (response === null) {
           res.status(404).send({ msg: "User not found." });
         } else {

@@ -238,6 +238,11 @@
                       prepend-icon="mdi-calendar"
                       readonly
                     ></v-text-field>
+                    <v-select
+                      v-model="bookDeviceObject.team"
+                      label="Team"
+                      :items="teamsList"
+                    ></v-select>
                   </v-col>
                 </v-row>
                 </v-container>
@@ -347,7 +352,7 @@ import { validateIpv4 } from "./../utils/helpers";
       editDialog: false,
       showBookDevice: false,
       bookDeviceId: null,
-      // dates: ['2021-11-26', '2021-11-27'],
+      bookDeviceObject: {},
       ipRules: [
         v => !!v || 'IP address is required',
         v => validateIpv4(v) || 'IP address is invalid'
@@ -458,20 +463,21 @@ import { validateIpv4 } from "./../utils/helpers";
         this.newDeviceDialog =false
       },
       bookDeviceForm(item){
-        this.bookDevice = item
+        this.bookDeviceObject = item
         this.showBookDevice = true
       },
       async book(){
         await bookDevice({
-          deviceId: this.bookDevice.id,
+          deviceId: this.bookDeviceObject.id,
           emailId: this.$store.state.user.emailId,
-          dates: this.dates
+          dates: this.dates,
+          team: this.bookDeviceObject.team
         }).then(async (res) => {
           await this.sendEmailExistingOwner(res.data, this.$store.state.user.emailId);
           await this.sendEmailNewOwner(res.data, this.$store.state.user.emailId);
         })
         this.initialize()
-        const updatedDevice = await getDeviceFromID(this.bookDevice.id)
+        const updatedDevice = await getDeviceFromID(this.bookDeviceObject.id)
         this.devices.forEach((device)=>{
           if(device.id == updatedDevice.id){
             device=updatedDevice
