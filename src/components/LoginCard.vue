@@ -2,7 +2,7 @@
   <v-app>
     <v-card :loading="loading" class="mx-auto my-auto" width="500">
       <v-card-title center class="pl-6">
-          Sign In
+          <v-img src="@/assets/MainLogo.jpg"/>
       </v-card-title>
       <v-form>
         <v-container>
