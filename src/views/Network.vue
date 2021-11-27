@@ -432,11 +432,13 @@ import { validateIpv4 } from "./../utils/helpers";
       },
       editItem (item){
         this.editDialog = true
-        this.newEditedItem = this.editedItem;
-        this.newEditedItem.id = item.id;
+        this.editedItem = Object.assign({}, item)
+        this.newEditedItem = item
       },
       saveEdit(){
-        updateDevice(this.newEditedItem)
+        updateDevice(this.editedItem)
+        const index = this.devices.indexOf(this.newEditedItem)
+        Object.assign(this.devices[index], this.editedItem)
         this.editDialog = false
       },
       closeEdit(){
