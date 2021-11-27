@@ -94,7 +94,7 @@ export default {
       ],
       emailRules: [
         v => !!v || 'E-mail is required',
-        v => validateEmail(v) || 'E-mail must be valid',
+        v => validateEmail(v) || 'Use a valid incedoinc email ID',
       ],
     };
   },

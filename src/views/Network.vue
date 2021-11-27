@@ -85,24 +85,14 @@
                 </v-row>
                 <v-row>
                   <v-col
-                    cols="6"
-                    md="6"
+                    cols="12"
+                    md="12"
                   >
                     <v-text-field
                       v-model="newItem.ipaddress"
                       label="IP Address"
                       :rules=ipRules
                     ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="6"
-                    md="6"
-                  >
-                    <v-select
-                      v-model="newItem.team"
-                      label="Team"
-                      :items="teamsList"
-                    ></v-select>
                   </v-col>
                 </v-row>
               </v-container>
@@ -345,14 +335,12 @@ import { validateIpv4 } from "./../utils/helpers";
         deviceName: '',
         type: '',
         ipaddress: '0.0.0.0',
-        team:''
       },
       newEditedItem: {},
       defaultItem: {
         deviceName: '',
         type: '',
         ipaddress: '0.0.0.0',
-        team:''
       },
       search:'',
       formTitle:'New Device',
@@ -378,7 +366,7 @@ import { validateIpv4 } from "./../utils/helpers";
       ],
       dates: [(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)],
       deviceTypeList:["Server","VM","Device"],
-      teamsList:["HiOS","HiSecOS","HiLCOS","Provize","Wireless","Grtcomm"]
+      teamsList:["HiOS","HiSecOS","HiLCOS","Provize","Wireless","Grtcomm", "No team"]
     }),
     created () {
       if(this.userRole=="admin"){this.headers.push({ text: 'Actions', value: 'actions' })}
@@ -397,8 +385,6 @@ import { validateIpv4 } from "./../utils/helpers";
           this.newItem.type === "" ||
           this.newItem.ipaddress === null ||
           this.newItem.ipaddress === "" ||
-          this.newItem.team === null ||
-          this.newItem.team === "" ||
           !validateIpv4(this.newItem.ipaddress)
         ) {
           return true;

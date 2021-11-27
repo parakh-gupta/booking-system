@@ -95,42 +95,72 @@
       <v-tab-item>
         <v-card class="pa-10" >
           <v-form
-          ref="ResetPasswordForm"
+          ref="ChangePasswordForm"
           >
           <v-text-field
             v-model="currentPassword"
             label="Current Password"
+            :rules=currentPasswordRules
+            :append-icon="showPasswordCurrent ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="showPasswordCurrent ? 'text' : 'password'"
+            @click:append="showPasswordCurrent = !showPasswordCurrent"
             required
           ></v-text-field>
 
           <v-text-field
             v-model="newPassword"
             label="New Password"
+            :rules=newPasswordRules
+            :append-icon="showPasswordNew ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="showPasswordNew ? 'text' : 'password'"
+            @click:append="showPasswordNew = !showPasswordNew"
             required
           ></v-text-field>
 
           <v-text-field
             v-model="confirmPassword"
             label="Confirm Password"
+            :rules=confirmPasswordRules
+            :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="showPasswordConfirm ? 'text' : 'password'"
+            @click:append="showPasswordConfirm = !showPasswordConfirm"
+            class="mb-5"
             required
           ></v-text-field>
-
+          <v-row>
+            <v-col class="pt-0 mx-3 mb-0">
+              <v-alert
+                dense
+                text
+                type="success"
+                v-if="triedPasswordChange && passwordChangeSuccessful"
+                >Password change successful</v-alert
+              >
+              <v-alert
+                dense
+                text
+                type="error"
+                v-if="triedPasswordChange && !passwordChangeSuccessful"
+                >Existing Password is incorrect</v-alert
+              >
+            </v-col>
+          </v-row>
           <v-btn
             color="primary"
+            @click="changePasswordBtn"
+            :disabled=changePasswordDisable
           >
-            Reset Password
+            Change Password
           </v-btn>
-
           </v-form>
         </v-card>
       </v-tab-item>
     </v-tabs-items>
   </v-card>
-
 </template>
 
 <script>
-import { devicesBookedForUser, releaseDevice, sendMail } from "../utils/api";
+import { devicesBookedForUser, releaseDevice, sendMail, changeUserPassword } from "../utils/api";
 import { DEFAULT_ADMIN } from "../utils/constants";
 import { mapState } from 'vuex';
    export default {
@@ -138,8 +168,11 @@ import { mapState } from 'vuex';
       return {
         tab: null,
         items: [
-          'Update user Info','Reset Password'
+          'Update user Info','Change Password'
         ],
+        showPasswordCurrent: false,
+        showPasswordNew: false,
+        showPasswordConfirm: false,
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -156,18 +189,62 @@ import { mapState } from 'vuex';
           { text: 'Release Device', value: 'release' },
         ],
         releaseObj:'',
-        releaseDialog: false
+        releaseDialog: false,
+        confirmPasswordRules: [
+          v => v === this.newPassword || "Passwords don't match",
+          v => !!v || "Please confirm the password",
+        ],
+        newPasswordRules: [
+          v => !!v || "Please enter the password",
+        ],
+        currentPasswordRules: [
+          v => !!v || "Please enter the password",
+        ],
+        triedPasswordChange: false,
+        passwordChangeSuccessful: false
       }
     },
     computed:{
       ...mapState('user', ['userId', 'emailId', 'userRole', 'name']),
+      changePasswordDisable() {
+        if(
+          this.newPassword !== this.confirmPassword ||
+          this.newPassword === "" ||
+          this.newPassword === null ||
+          this.confirmPassword === "" ||
+          this.confirmPassword === null ||
+          this.currentPassword === "" ||
+          this.currentPassword === null
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     },
     created(){
       this.getDevices();
     },
     methods: {
-      reset(){
-        this.$refs.form.reset()
+      async changePasswordBtn() {
+        const data = {
+          currentPassword: this.currentPassword,
+          newPassword: this.newPassword,
+          confirmPassword: this.confirmPassword,
+          email: this.$store.state.user.emailId
+        }
+        await changeUserPassword(data).then(res => {
+            console.log("kkkk", res)
+          if (!res || res === undefined || res.status === undefined || res.status == null || !res.status) {
+            this.triedPasswordChange = true;
+            this.passwordChangeSuccessful = false;
+          }
+          else if (res.status === 200) {
+            this.triedPasswordChange = true;
+            this.passwordChangeSuccessful = true;
+          }
+          console.log(res)
+        }).catch(e => e)
       },
       async getDevices(){
         const res= await devicesBookedForUser({email: this.emailId})

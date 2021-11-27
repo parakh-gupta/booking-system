@@ -11,6 +11,7 @@ const deviceRouter = require("./routers/devicesRouter");
 const bookingRouter = require("./routers/bookRouter");
 const emailRouter = require("./routers/emailRouter");
 const releaseRouter = require("./routers/releaseRouter");
+const passwordRouter = require("./routers/passwordRouter");
 
 
 const app = express();
@@ -35,6 +36,7 @@ app
   .use("/book", bookingRouter)
   .use("/email", emailRouter)
   .use("/release", releaseRouter)
+  .use("/password", passwordRouter)
   .listen(app.get("port"),
     console.log("Listening to port", process.env.PORT || 5000)
   );

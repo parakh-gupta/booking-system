@@ -61,3 +61,8 @@ export async function releaseDevice(data){
 	const response = await axios.post(`${API_BASE_URL}/release`,data).catch(() => { })
 	return response
 }
+
+export async function changeUserPassword(data){
+	const response = await axios.post(`${API_BASE_URL}/password/change`, data).catch(() => { })
+	return response
+}
