@@ -87,6 +87,7 @@ async function main() {
             ipaddress: req.body.ipaddress,
             availability: true,
             team: req.body.team,
+            date: new Date().toISOString().substr(0, 10),
           };
           data.id = generateUuid();
         await client

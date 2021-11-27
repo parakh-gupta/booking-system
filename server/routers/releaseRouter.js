@@ -27,7 +27,7 @@ async function main() {
             await client
             .db("device-booking")
             .collection("devices")
-            .updateMany({id: req.body.deviceId},{ $set: {availability: true, user: defaultUser}}, async (err, response) => {
+            .updateMany({id: req.body.deviceId},{ $set: {availability: true, user: defaultUser, date: new Date().toISOString().substr(0, 10)}}, async (err, response) => {
             if (response.matchedCount == 0) {
                 res.status(404).send({ msg: "No device available" });
             } else {

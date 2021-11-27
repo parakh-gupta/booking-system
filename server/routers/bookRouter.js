@@ -25,11 +25,12 @@ async function main() {
             .findOne({ id: req.body.deviceId }, async (err, response) => {
               data = response;
             });
-
+            const dates = req.body.dates
             await client
             .db("device-booking")
             .collection("devices")
-            .updateMany({id: req.body.deviceId},{ $set: {availability: false, user: req.body.emailId}}, async (err, response) => {
+            .updateMany({id: req.body.deviceId},{ $set: {availability: false, user: req.body.emailId, date:dates[0]>dates[1]? dates[0]:dates[1]}}, 
+                async (err, response) => {
             if (response.matchedCount == 0) {
                 res.status(404).send({ msg: "No device available" });
             } else {

@@ -303,7 +303,7 @@
           >
             Book
           </v-btn>
-          <span class="red--text text-center" v-else>ALREADY BOOKED</span>
+          <span class="red--text text-center" v-else>ALREADY BOOKED TILL {{new Date(item.date).toLocaleDateString()}}</span>
         </template>
       </v-data-table>
     </v-card>
