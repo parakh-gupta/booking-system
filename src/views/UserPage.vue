@@ -9,7 +9,7 @@
 
     <v-tabs
       v-model="tab"
-      background-color="transparent"
+      background-color="blue lighten-5"
       grow
     >
       <v-tab
@@ -59,7 +59,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-          <v-expansion-panels flat>
+          <v-expansion-panels accordion>
           <v-expansion-panel>
             <v-expansion-panel-header>
               Assigned Devices

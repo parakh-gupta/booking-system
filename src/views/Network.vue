@@ -65,8 +65,7 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    sm="6"
-                    md="4"
+                    md="6"
                   >
                     <v-text-field
                       v-model="newItem.deviceName"
@@ -76,21 +75,18 @@
                   </v-col>
                   <v-col
                     cols="6"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
+                    md="6"
+                  ><v-select
                       v-model="newItem.type"
                       label="Device Type"
-                      :rules=deviceTypeRules
-                    ></v-text-field>
+                      :items="deviceTypeList"
+                    ></v-select>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col
                     cols="6"
-                    sm="6"
-                    md="4"
+                    md="6"
                   >
                     <v-text-field
                       v-model="newItem.ipaddress"
@@ -100,14 +96,13 @@
                   </v-col>
                   <v-col
                     cols="6"
-                    sm="6"
-                    md="4"
+                    md="6"
                   >
-                    <v-text-field
+                    <v-select
                       v-model="newItem.team"
                       label="Team"
-                      :rules=teamRules
-                    ></v-text-field>
+                      :items="teamsList"
+                    ></v-select>
                   </v-col>
                 </v-row>
               </v-container>
@@ -147,8 +142,7 @@
                 <v-row>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
+                    md="6"
                   >
                     <v-text-field
                       v-model="editedItem.deviceName"
@@ -158,19 +152,17 @@
                   </v-col>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
+                    md="6"
                   >
-                    <v-text-field
+                    <v-select
                       v-model="editedItem.type"
                       label="Device Type"
-                      :rules=deviceTypeRules
-                    ></v-text-field>
+                      :items="deviceTypeList"
+                    ></v-select>
                   </v-col>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
+                    md="6"
                   >
                     <v-text-field
                       v-model="editedItem.ipaddress"
@@ -180,14 +172,13 @@
                   </v-col>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
+                    md="6"
                   >
-                    <v-text-field
+                    <v-select
                       v-model="editedItem.team"
                       label="Team"
-                      :rules=teamRules
-                    ></v-text-field>
+                      :items="teamsList"
+                    ></v-select>
                   </v-col>
                 </v-row>
               </v-container>
@@ -301,9 +292,17 @@
             v-if="item.availability==true"
             @click="bookDeviceForm(item)"
           >
-            Book
+            Book Now
           </v-btn>
-          <span class="red--text text-center" v-else>ALREADY BOOKED TILL {{new Date(item.date).toLocaleDateString()}}</span>
+          <span class="red--text text-center" v-else>ALREADY BOOKED</span>
+        </template>
+        <template v-slot:item.date="{ item }">
+          <span
+            v-if="item.availability==true"
+          >
+            -
+          </span>
+          <span  v-else>{{item.date}}</span>
         </template>
       </v-data-table>
     </v-card>
@@ -330,6 +329,7 @@ import { validateIpv4 } from "./../utils/helpers";
           { text: 'Owner', value: 'user' },
           { text: 'Team', value: 'team' },
           { text: 'Booking', value: 'booking' },
+          { text: 'Till Date', value: 'date' },
         ],
       alert:false,
       deleteObj:null,
@@ -377,6 +377,8 @@ import { validateIpv4 } from "./../utils/helpers";
         v => !!v || 'Owner is required',
       ],
       dates: [(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)],
+      deviceTypeList:["Server","VM","Device"],
+      teamsList:["HiOS","HiSecOS","HiLCOS","Provize","Wireless","Grtcomm"]
     }),
     created () {
       if(this.userRole=="admin"){this.headers.push({ text: 'Actions', value: 'actions' })}
