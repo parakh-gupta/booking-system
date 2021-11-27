@@ -78,9 +78,11 @@
                   color="error"
                   outlined
                   @click="releaseItem(item)"
+                  v-if="item.availability==false"
                 >
                   Release
                 </v-btn>
+                <span class="green--text text-center" v-else>FREE</span>
               </template>
               </v-data-table>
               <div v-else> NO DEVICES ASSIGNED</div>
