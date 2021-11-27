@@ -6,6 +6,8 @@
       >
         <v-app-bar-nav-icon @click="mini = !mini"></v-app-bar-nav-icon>
 
+        <v-img src="@/assets/logo.jpg" max-height="39" max-width="40"/>
+        <v-img src="@/assets/hrbt.jpg" max-height="50" max-width="100"/>
         <v-spacer></v-spacer>
       
         <v-switch 
