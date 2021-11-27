@@ -477,7 +477,6 @@ import { validateIpv4 } from "./../utils/helpers";
           emailId: this.$store.state.user.emailId,
           dates: this.dates
         }).then(async (res) => {
-          console.log(res)
           await this.sendEmailExistingOwner(res.data, this.$store.state.user.emailId);
           await this.sendEmailNewOwner(res.data, this.$store.state.user.emailId);
         })

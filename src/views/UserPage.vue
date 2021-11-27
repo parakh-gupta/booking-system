@@ -128,7 +128,8 @@
 </template>
 
 <script>
-import {devicesBookedForUser, releaseDevice} from "../utils/api";
+import { devicesBookedForUser, releaseDevice, sendMail } from "../utils/api";
+import { DEFAULT_ADMIN } from "../utils/constants";
 import { mapState } from 'vuex';
    export default {
     data () {
@@ -178,14 +179,34 @@ import { mapState } from 'vuex';
         console.log("pppppppppppppp", this.releaseDialog)
       },
       release(){
-        releaseDevice({deviceId:this.releaseObj.id})
+        releaseDevice({deviceId:this.releaseObj.id}).then(async res => {
+          console.log(res)
+          await this.sendEmailReleaseExistingOwner(res.data, DEFAULT_ADMIN);
+          await this.sendEmailReleaseNewOwner(res.data, DEFAULT_ADMIN);
+        })
         const pos = this.devices.indexOf(this.releaseObj);
         this.devices.splice(pos, 1)
         this.releaseDialog = false
       },
       close(){
         this.releaseDialog = false
-      }
+      },
+      async sendEmailReleaseExistingOwner(deviceData, newUser) {
+        const data = {
+          mailBody: `<p>Hello, you have released the device ${deviceData.deviceName} with IP address ${deviceData.ipaddress}. The admin ${newUser} has been notified.<p/>`,
+          subject: `Update on your released device`,
+          email: deviceData.user
+        }
+        await sendMail(data);
+      },
+      async sendEmailReleaseNewOwner(deviceData, newUser) {
+        const data = {
+          mailBody: `<p>Hello, the device ${deviceData.deviceName} with IP address ${deviceData.ipaddress}has been released by user ${deviceData.user}.<p/>`,
+          subject: `Update on a released device`,
+          email: newUser
+        }
+        await sendMail(data);
+      },
     },
   }
 </script>
