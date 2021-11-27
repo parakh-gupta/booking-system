@@ -48,7 +48,6 @@ export async function updateDevice(device) {
 }
 
 export async function sendMail(data) {
-	console.log(data)
 	const response = await axios.post(`${API_BASE_URL}/email`, data).catch(() => { })
 	return response
 }
