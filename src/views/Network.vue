@@ -243,17 +243,18 @@
                       label="Team"
                       :items="teamsList"
                     ></v-select>
+                    <v-row>
+                      <v-col cols="6">
+                        <v-btn block text color="blue darken-1" @click="cancelBooking">Cancel</v-btn>
+                      </v-col>
+                      <v-col cols="6">
+                        <v-btn block text color="blue darken-1" @click="book">Book</v-btn>
+                      </v-col>
+                    </v-row>
                   </v-col>
                 </v-row>
                 </v-container>
                 </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text color="blue darken-1" @click="cancelBooking">Cancel</v-btn>
-                <v-btn text color="blue darken-1" @click="book">Book</v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
             </v-card>
           </v-dialog>
         </template>
